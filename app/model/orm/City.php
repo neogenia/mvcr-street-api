@@ -30,10 +30,30 @@ class City
 	 */
 	protected $code;
 
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $minZip;
+
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $maxZip;
+
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $menCount;
+
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $womenCount;
+
     /**
-     * @ORM\OneToMany(targetEntity="Street", mappedBy="city")
+     * @ORM\OneToMany(targetEntity="PartCity", mappedBy="city")
      */
-	protected $streets;
+	protected $partCities;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="Region", inversedBy="cities")

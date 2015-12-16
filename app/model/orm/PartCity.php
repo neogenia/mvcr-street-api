@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
-class Region
+class PartCity
 {
 
 	use \Kdyby\Doctrine\Entities\MagicAccessors;
@@ -28,17 +28,26 @@ class Region
 	/**
 	 * @ORM\Column(type="string")
 	 */
-	protected $country;
+	protected $code;
 
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="integer")
 	 */
-	protected $district;
+	protected $minZip;
+
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $maxZip;
 
     /**
-     * @ORM\OneToMany(targetEntity="City", mappedBy="region")
+     * @ORM\OneToMany(targetEntity="Street", mappedBy="partCity")
      */
-	protected $cities;
+	protected $streets;
 
+	/**
+	 * @ORM\ManyToOne(targetEntity="City", inversedBy="partCities")
+	 */
+	protected $city;
 
 }
