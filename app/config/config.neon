@@ -33,3 +33,4 @@ session:
 
 services:
 	router: StreetApi\RouterFactory::createRouter
+	- {class: StreetApi\Services\ImportAddressService(..., %appDir%), inject: on}
