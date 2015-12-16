@@ -10,14 +10,19 @@ php:
 
 extensions:
     # add theese four lines
-    console: Kdyby\Console\DI\ConsoleExtension
-    events: Kdyby\Events\DI\EventsExtension
-    annotations: Kdyby\Annotations\DI\AnnotationsExtension
-    doctrine: Kdyby\Doctrine\DI\OrmExtension
+	console: Kdyby\Console\DI\ConsoleExtension
+	events: Kdyby\Events\DI\EventsExtension
+	annotations: Kdyby\Annotations\DI\AnnotationsExtension
+	doctrine: Kdyby\Doctrine\DI\OrmExtension
+
+
+console:
+    commands:
+        - Console\ImportAddressCommand
+
 
 
 application:
-	errorPresenter: Error
 	mapping:
 		*: StreetApi\Presenters\*Presenter
 
@@ -27,4 +32,4 @@ session:
 
 
 services:
-	router: App\RouterFactory::createRouter
+	router: StreetApi\RouterFactory::createRouter
