@@ -4,6 +4,7 @@ namespace StreetApi\Services;
 
 use Kdyby\Doctrine\EntityManager;
 use Nette\Object;
+use SimpleXMLElement;
 use StreetApi\Model\City;
 use StreetApi\Model\PartCity;
 use StreetApi\Model\Region;
@@ -44,13 +45,20 @@ class ImportAddressService extends Object
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getRootDir()
 	{
 		return $this->rootDir;
 	}
 
 
-	public function import($xmlFile, ProgressBar $progressBar)
+	/**
+	 * @param SimpleXMLElement $xmlFile
+	 * @param ProgressBar $progressBar
+	 */
+	public function import(SimpleXMLElement $xmlFile, ProgressBar $progressBar)
 	{
 		foreach ($xmlFile->oblast as $region) {
 			$regionEntity = $this->parseRegion($region, $progressBar);
@@ -68,11 +76,16 @@ class ImportAddressService extends Object
 	}
 
 
+	/**
+	 * @param array $region
+	 * @param ProgressBar $progressBar
+	 * @return Region|null
+	 */
 	protected function parseRegion($region, ProgressBar $progressBar)
 	{
-		$title = (string) $region['nazev'];
-		$country = (string) $region['kraj'];
-		$district = (string) $region['okres'];
+		$title = isset($region['nazev']) ? (string) $region['nazev'] : NULL;
+		$country = isset($region['kraj']) ? (string) $region['kraj'] : NULL;
+		$district = isset($region['okres']) ? (string) $region['okres'] : NULL;
 
 		$progressBar->setMessage('<info>processing ' . $title . '</info>');
 
@@ -90,14 +103,19 @@ class ImportAddressService extends Object
 	}
 
 
+	/**
+	 * @param array $city
+	 * @param Region $region
+	 * @return City|null
+	 */
 	protected function parseCity($city, Region $region)
 	{
-		$code = (string) $city['kod'];
-		$title = (string) $city['nazev'];
-		$minZip = (string) $city['MinPSC'];
-		$maxZip = (string) $city['MaxPSC'];
-		$menCount = (string) $city['muzi'];
-		$womenCount = (string) $city['zeny'];
+		$code = isset($city['kod']) ? (string) $city['kod'] : NULL;
+		$title = isset($city['nazev']) ? (string) $city['nazev'] : NULL;
+		$minZip = isset($city['MinPSC']) ? (string) $city['MinPSC'] : NULL;
+		$maxZip = isset($city['MaxPSC']) ? (string) $city['MaxPSC'] : NULL;
+		$menCount = isset($city['muzi']) ? (string) $city['muzi'] : NULL;
+		$womenCount = isset($city['zeny']) ? (string) $city['zeny'] : NULL;
 
 		$city = $this->cityRepository->findOneBy(['code' => $code]);
 		if (!$city) {
@@ -117,12 +135,17 @@ class ImportAddressService extends Object
 	}
 
 
+	/**
+	 * @param $partCity
+	 * @param City $city
+	 * @return PartCity|null
+	 */
 	protected function parsePartCity($partCity, City $city)
 	{
-		$code = (string) $partCity['kod'];
-		$title = (string) $partCity['nazev'];
-		$minZip = (string) $partCity['MinPSC'];
-		$maxZip = (string) $partCity['MaxPSC'];
+		$code = isset($partCity['kod']) ? (string) $partCity['kod'] : NULL;
+		$title = isset($partCity['nazev']) ? (string) $partCity['nazev'] : NULL;
+		$minZip = isset($partCity['MinPSC']) ? (string) $partCity['MinPSC'] : NULL;
+		$maxZip = isset($partCity['MaxPSC']) ? (string) $partCity['MaxPSC'] : NULL;
 
 		$partCity = $this->partCityRepository->findOneBy(['code' => $code]);
 		if (!$partCity) {
@@ -141,10 +164,14 @@ class ImportAddressService extends Object
 	}
 
 
+	/**
+	 * @param array $street
+	 * @param PartCity $partCity
+	 */
 	protected function parseStreet($street, PartCity $partCity)
 	{
-		$code = (string) $street['kod'];
-		$title = (string) $street['nazev'];
+		$code = isset($street['kod']) ? (string) $street['kod'] : NULL;
+		$title = isset($street['nazev']) ? (string) $street['nazev'] : NULL;
 
 		$street = $this->streetRepository->findOneBy(['code' => $code]);
 		if (!$street) {
@@ -152,7 +179,7 @@ class ImportAddressService extends Object
 			$street->code = $code;
 		}
 		$street->title = $title;
-		$street->city = $partCity;
+		$street->partCity = $partCity;
 
 		$this->em->persist($street);
 		$this->em->flush();
