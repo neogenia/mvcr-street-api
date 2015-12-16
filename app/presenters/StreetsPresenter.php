@@ -15,10 +15,11 @@ class StreetsPresenter extends ApiPresenter
 
 	public function read()
 	{
+		$title = $this->getApiParameter('title', FALSE);
 		if ($partCityId = $this->getApiParameter('partCityId', FALSE)) {
-			$this->sendJson($this->apiStreetsService->getStreetsFromPartCity($partCityId));
+			$this->sendJson($this->apiStreetsService->getStreetsFromPartCity($partCityId, $title));
 		} elseif ($cityId = $this->getApiParameter('cityId', FALSE)) {
-			$this->sendJson($this->apiStreetsService->getStreetsFromCity($cityId, $this->getApiParameter('includePartCities', FALSE)));
+			$this->sendJson($this->apiStreetsService->getStreetsFromCity($cityId, $title, $this->getApiParameter('includePartCities', FALSE)));
 		} else {
 			$this->sendJson([
 				'error' => 'Missing one of partCityId or cityId parameter.'

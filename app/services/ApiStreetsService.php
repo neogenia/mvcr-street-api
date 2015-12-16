@@ -35,9 +35,14 @@ class ApiStreetsService extends Object
 	 * @param int $partCityId
 	 * @return array
 	 */
-	public function getStreetsFromPartCity($partCityId)
+	public function getStreetsFromPartCity($partCityId, $title = NULL)
 	{
-		$streets = $this->streetRepository->findBy(['partCity' => $partCityId]);
+		if ($title) {
+			$criteria = ['partCity' => $partCityId, 'title LIKE' => '%'.$title.'%'];
+		} else {
+			$criteria = ['partCity' => $partCityId];
+		}
+		$streets = $this->streetRepository->findBy($criteria);
 
 		$data = [];
 		foreach ($streets as $street) {
@@ -56,12 +61,12 @@ class ApiStreetsService extends Object
 	 * @param $cityId
 	 * @param bool|null $includeRegions
 	 */
-	public function getStreetsFromCity($cityId, $includePartCities = NULL)
+	public function getStreetsFromCity($cityId, $title = NULL, $includePartCities = NULL)
 	{
 		if ($includePartCities) {
-			return $this->streetWithRegions($cityId);
+			return $this->streetWithRegions($cityId, $title);
 		} else {
-			return $this->streetWithoutRegions($cityId);
+			return $this->streetWithoutRegions($cityId, $title);
 		}
 	}
 
@@ -70,11 +75,16 @@ class ApiStreetsService extends Object
 	 * @param int $cityId
 	 * @return array
 	 */
-	protected function streetWithoutRegions($cityId)
+	protected function streetWithoutRegions($cityId, $title = NULL)
 	{
 		$data = [];
 
-		$streets = $this->streetRepository->findBy(['partCity.city' => $cityId]);
+		if ($title) {
+			$criteria = ['partCity.city' => $cityId, 'title LIKE' => '%'.$title.'%'];
+		} else {
+			$criteria = ['partCity.city' => $cityId];
+		}
+		$streets = $this->streetRepository->findBy($criteria);
 		foreach ($streets as $street) {
 			$data[] = [
 				'streetId' => $street->id,
@@ -91,7 +101,7 @@ class ApiStreetsService extends Object
 	 * @param int $cityId
 	 * @return array
 	 */
-	protected function streetWithRegions($cityId)
+	protected function streetWithRegions($cityId, $title = NULL)
 	{
 		$data = [];
 
@@ -103,7 +113,7 @@ class ApiStreetsService extends Object
 				'minZip' => $partCity->minZip,
 				'maxZip' => $partCity->maxZip,
 			];
-			$data[$key] += $this->getStreetsFromPartCity($partCity->id);
+			$data[$key] += $this->getStreetsFromPartCity($partCity->id, $title);
 		}
 
 		return ['partCities' => $data];
