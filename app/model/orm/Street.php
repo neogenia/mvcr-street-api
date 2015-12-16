@@ -33,7 +33,7 @@ class Street
 	/**
 	 * @ORM\ManyToOne(targetEntity="PartCity", inversedBy="streets")
 	 */
-	protected $city;
+	protected $partCity;
 
 
 }
