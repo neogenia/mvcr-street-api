@@ -2,6 +2,7 @@
 
 namespace StreetApi\Services;
 
+use Doctrine\Common\Collections\Criteria;
 use Kdyby\Doctrine\EntityManager;
 use Kdyby\Doctrine\EntityRepository;
 use Nette\Object;
@@ -42,7 +43,7 @@ class ApiStreetsService extends Object
 		} else {
 			$criteria = ['partCity' => $partCityId];
 		}
-		$streets = $this->streetRepository->findBy($criteria);
+		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
 
 		$data = [];
 		foreach ($streets as $street) {
@@ -84,7 +85,7 @@ class ApiStreetsService extends Object
 		} else {
 			$criteria = ['partCity.city' => $cityId];
 		}
-		$streets = $this->streetRepository->findBy($criteria);
+		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
 		foreach ($streets as $street) {
 			$data[] = [
 				'streetId' => $street->id,
@@ -105,7 +106,7 @@ class ApiStreetsService extends Object
 	{
 		$data = [];
 
-		$partCities = $this->partCityRepository->findBy(['city' => $cityId]);
+		$partCities = $this->partCityRepository->findBy(['city' => $cityId], ['title' => Criteria::ASC]);
 		foreach ($partCities as $key => $partCity) {
 			$data[$key] = [
 				'title' => $partCity->title,
