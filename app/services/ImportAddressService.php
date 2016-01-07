@@ -58,11 +58,14 @@ class ImportAddressService extends Object
 	 * @param SimpleXMLElement $xmlFile
 	 * @param ProgressBar $progressBar
 	 */
-	public function import(SimpleXMLElement $xmlFile, ProgressBar $progressBar)
+	public function import(SimpleXMLElement $xmlFile, ProgressBar $progressBar, $cityId = NULL)
 	{
 		foreach ($xmlFile->oblast as $region) {
 			$regionEntity = $this->parseRegion($region, $progressBar);
 			foreach ($region as $city) {
+				if ($cityId && $city['kod'] != $cityId) {
+					continue;
+				}
 				$cityEntity = $this->parseCity($city, $regionEntity);
 				foreach ($city->cast as $partCity) {
 					$partCityEntity = $this->parsePartCity($partCity, $cityEntity);

@@ -81,9 +81,9 @@ class ApiStreetsService extends Object
 		$data = [];
 
 		if ($title) {
-			$criteria = ['partCity.city' => $cityId, 'title LIKE' => '%'.$title.'%'];
+			$criteria = ['partCity.city.code' => $cityId, 'title LIKE' => '%'.$title.'%'];
 		} else {
-			$criteria = ['partCity.city' => $cityId];
+			$criteria = ['partCity.city.code' => $cityId];
 		}
 		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
 		foreach ($streets as $street) {

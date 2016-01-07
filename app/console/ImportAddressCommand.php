@@ -5,6 +5,7 @@ namespace Console;
 use StreetApi\Services\ImportAddressService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -14,7 +15,9 @@ class ImportAddressCommand extends Command
 
 	protected function configure()
 	{
-		$this->setName('import:address')->setDescription('Import new addresses');
+		$this->setName('import:address')
+			->setDescription('Import new addresses')
+			->addArgument('cityId', InputArgument::OPTIONAL);
 	}
 
 
@@ -22,6 +25,8 @@ class ImportAddressCommand extends Command
 	{
 		/** @var ImportAddressService $importAddressService */
 		$importAddressService = $this->getHelper('container')->getByType('StreetApi\Services\ImportAddressService');
+
+		$cityId = $input->getArgument('cityId');
 
 		$xmlFile = simplexml_load_file($importAddressService->getRootDir() . '/../adresy.xml');
 
@@ -37,7 +42,7 @@ class ImportAddressCommand extends Command
 			$progressBar->setRedrawFrequency(ceil(($totalCount / 100)));
 			$progressBar->start();
 
-			$importAddressService->import($xmlFile, $progressBar);
+			$importAddressService->import($xmlFile, $progressBar, $cityId);
 
 			$output->writeLn(PHP_EOL . '<info>Importing addresses finished</info>');
 			return 0;
