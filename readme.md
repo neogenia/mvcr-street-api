@@ -1,5 +1,5 @@
 # MVCR Street API
-MVCR Street API is used for obtain the streets by the city via REST API. Only for Czech Republic!
+Nette based MVCR Street API is used for obtain the streets by the city via REST API. Only for Czech Republic!
 
 ## Import data
 - download xml file from [mvcr site](http://aplikace.mvcr.cz/adresy/) and copy to root of project
@@ -9,6 +9,7 @@ php www/index.php import:address
 ```
 ## Usage
 - add header `X-HTTP-Method-Override: GET`
+- basic authentication: add custom header `X-Api-Key` with value from `config.local.neon`
 - endpoint: `http://<project_url>/api/streets`
 
 ### **get streets by CityId (city part exclude):**

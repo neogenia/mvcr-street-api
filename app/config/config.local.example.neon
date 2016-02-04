@@ -1,0 +1,9 @@
+doctrine:
+    host:
+    user:
+    password:
+    dbname:
+    metadata:
+        StreetApi: %appDir%
+parameters:
+    apiKey: #optional
