@@ -176,7 +176,7 @@ class ImportAddressService extends Object
 		$code = isset($street['kod']) ? (string) $street['kod'] : NULL;
 		$title = isset($street['nazev']) ? (string) $street['nazev'] : NULL;
 
-		$street = $this->streetRepository->findOneBy(['code' => $code]);
+		$street = $this->streetRepository->findOneBy(['code' => $code, 'partCity' => $partCity]);
 		if (!$street) {
 			$street = new Street();
 			$street->code = $code;
