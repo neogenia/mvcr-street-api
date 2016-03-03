@@ -150,7 +150,7 @@ class ImportAddressService extends Object
 		$minZip = isset($partCity['MinPSC']) ? (string) $partCity['MinPSC'] : NULL;
 		$maxZip = isset($partCity['MaxPSC']) ? (string) $partCity['MaxPSC'] : NULL;
 
-		$partCity = $this->partCityRepository->findOneBy(['code' => $code]);
+		$partCity = $this->partCityRepository->findOneBy(['code' => $code, 'city' => $city]);
 		if (!$partCity) {
 			$partCity = new PartCity();
 			$partCity->code = $code;
