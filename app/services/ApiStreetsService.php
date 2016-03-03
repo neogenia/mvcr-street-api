@@ -87,11 +87,13 @@ class ApiStreetsService extends Object
 		}
 		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
 		foreach ($streets as $street) {
-			$data[] = [
-				'streetId' => $street->id,
-				'title' => Strings::capitalize($street->title),
-				'code' => $street->code,
-			];
+			if (!is_numeric($street->title)) {
+				$data[] = [
+					'streetId' => $street->id,
+					'title' => Strings::capitalize($street->title),
+					'code' => $street->code,
+				];
+			}
 		}
 
 		return ['streets' => $data];
@@ -108,12 +110,14 @@ class ApiStreetsService extends Object
 
 		$partCities = $this->partCityRepository->findBy(['city' => $cityId], ['title' => Criteria::ASC]);
 		foreach ($partCities as $key => $partCity) {
-			$data[$key] = [
-				'title' => $partCity->title,
-				'code' => $partCity->code,
-				'minZip' => $partCity->minZip,
-				'maxZip' => $partCity->maxZip,
-			];
+			if (!is_numeric($partCity->title)) {
+				$data[$key] = [
+					'title' => $partCity->title,
+					'code' => $partCity->code,
+					'minZip' => $partCity->minZip,
+					'maxZip' => $partCity->maxZip,
+				];
+			}
 			$data[$key] += $this->getStreetsFromPartCity($partCity->id, $title);
 		}
 
