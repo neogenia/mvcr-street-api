@@ -108,7 +108,7 @@ class ApiStreetsService extends Object
 	{
 		$data = [];
 
-		$partCities = $this->partCityRepository->findBy(['city' => $cityId], ['title' => Criteria::ASC]);
+		$partCities = $this->partCityRepository->findBy(['city.code' => $cityId], ['title' => Criteria::ASC]);
 		foreach ($partCities as $key => $partCity) {
 			if (!is_numeric($partCity->title)) {
 				$data[$key] = [
