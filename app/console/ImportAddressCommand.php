@@ -30,6 +30,11 @@ class ImportAddressCommand extends Command
 
 		$xmlFile = simplexml_load_file($importAddressService->getRootDir() . '/../adresy.xml');
 
+		if (!$xmlFile) {
+			$output->writeln(PHP_EOL . '<error>Missing source file!</error>');
+			return 1;
+		}
+
 		try {
 			$output->writeLn('<info>Start importing addresses</info>');
 			$totalCount = $xmlFile->count();
