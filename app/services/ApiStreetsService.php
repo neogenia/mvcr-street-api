@@ -23,6 +23,9 @@ class ApiStreetsService extends Object
 	/** @var EntityRepository */
 	private $partCityRepository;
 
+	/** @var array */
+	private $tempArray = [];
+
 
 	public function __construct(EntityManager $em)
 	{
@@ -47,11 +50,14 @@ class ApiStreetsService extends Object
 
 		$data = [];
 		foreach ($streets as $street) {
-			$data[] = [
-				'streetId' => $street->id,
-				'title' => Strings::capitalize($street->title),
-				'code' => $street->code,
-			];
+			if (!array_search($street->title, $this->tempArray)) {
+				$this->tempArray[] = $street->title;
+				$data[] = [
+					'streetId' => $street->id,
+					'title' => Strings::capitalize($street->title),
+					'code' => $street->code,
+				];
+			}
 		}
 
 		return ['streets' => $data];
@@ -88,11 +94,14 @@ class ApiStreetsService extends Object
 		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
 		foreach ($streets as $street) {
 			if (!is_numeric($street->title)) {
-				$data[] = [
-					'streetId' => $street->id,
-					'title' => Strings::capitalize($street->title),
-					'code' => $street->code,
-				];
+				if (!array_search($street->title, $this->tempArray)) {
+					$this->tempArray[] = $street->title;
+					$data[] = [
+						'streetId' => $street->id,
+						'title' => Strings::capitalize($street->title),
+						'code' => $street->code,
+					];
+				}
 			}
 		}
 
