@@ -7,6 +7,7 @@ use Kdyby\Doctrine\EntityManager;
 use Kdyby\Doctrine\EntityRepository;
 use Nette\Object;
 use Nette\Utils\Strings;
+use StreetApi\Model\City;
 use StreetApi\Model\PartCity;
 use StreetApi\Model\Street;
 
@@ -23,6 +24,9 @@ class ApiStreetsService extends Object
 	/** @var EntityRepository */
 	private $partCityRepository;
 
+	/** @var EntityRepository */
+	private $cityRepository;
+
 	/** @var array */
 	private $tempArray = [];
 
@@ -32,6 +36,7 @@ class ApiStreetsService extends Object
 		$this->em = $em;
 		$this->streetRepository = $em->getRepository(Street::class);
 		$this->partCityRepository = $em->getRepository(PartCity::class);
+		$this->cityRepository = $em->getRepository(City::class);
 	}
 
 
@@ -104,8 +109,9 @@ class ApiStreetsService extends Object
 				}
 			}
 		}
+		$city = $this->cityRepository->findOneBy(['code' => $cityId]);
 
-		return ['streets' => $data];
+		return ['city' => $city ? $city->title : NULL, 'streets' => $data];
 	}
 
 
