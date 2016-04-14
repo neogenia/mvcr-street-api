@@ -82,6 +82,33 @@ class ApiStreetsService extends Object
 		}
 	}
 
+	public function getCities($title = null)
+	{
+		$data = [];
+		$criteria = [];
+
+		if ($title) {
+			$criteria['title LIKE'] = '%'.$title.'%';
+		}
+
+		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+
+		foreach ($cities as $city) {
+			if (is_numeric($city->title)) {
+				continue;
+			}
+
+			$data[] = [
+				'cityId' => $city->id,
+				'title' => Strings::capitalize($city->title),
+				'code' => $city->code,
+				'region' => Strings::capitalize($city->region->title),
+				'country' => Strings::capitalize($city->region->country),
+			];
+		}
+
+		return ['cities' => $data];
+	}
 
 	/**
 	 * @param int $cityId

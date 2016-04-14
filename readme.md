@@ -94,3 +94,34 @@ output:
         }
     ]
 }
+
+
+### Querying cities:
+- use the endpoint: http://<project_url>/api/cities
+input:
+```json
+{
+	"title": "Brno" // optional search key
+}
+```
+output:
+ ```json
+{
+    "cities": [
+        {
+            "cityId": 347,
+            "title": "Brno",
+            "code": "23964",
+            "region": "Brno",
+            "country": "Jihomoravský"
+        },
+        {
+            "cityId": 282,
+            "title": "Úsobrno",
+            "code": "1097",
+            "region": "Boskovice",
+            "country": "Jihomoravský"
+        },
+        ...
+    ]
+}
