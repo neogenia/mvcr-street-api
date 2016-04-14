@@ -98,10 +98,12 @@ output:
 
 ### Querying cities:
 - use the endpoint: http://<project_url>/api/cities
+- title is optional search key
+
 input:
 ```json
 {
-	"title": "Brno" // optional search key
+	"title": "Brno"
 }
 ```
 output:
