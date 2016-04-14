@@ -94,7 +94,7 @@ output:
         }
     ]
 }
-
+```
 
 ### Querying cities:
 - use the endpoint: http://<project_url>/api/cities
