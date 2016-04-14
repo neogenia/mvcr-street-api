@@ -51,7 +51,7 @@ class ApiStreetsService extends Object
 		} else {
 			$criteria = ['partCity' => $partCityId];
 		}
-		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
+		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 
 		$data = [];
 		foreach ($streets as $street) {
@@ -96,7 +96,7 @@ class ApiStreetsService extends Object
 		} else {
 			$criteria = ['partCity.city.code' => $cityId];
 		}
-		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC]);
+		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		foreach ($streets as $street) {
 			if (!is_numeric($street->title)) {
 				if (!array_search($street->title, $this->tempArray)) {
@@ -123,7 +123,7 @@ class ApiStreetsService extends Object
 	{
 		$data = [];
 
-		$partCities = $this->partCityRepository->findBy(['city.code' => $cityId], ['title' => Criteria::ASC]);
+		$partCities = $this->partCityRepository->findBy(['city.code' => $cityId], ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		foreach ($partCities as $key => $partCity) {
 			if (!is_numeric($partCity->title)) {
 				$data[$key] = [
