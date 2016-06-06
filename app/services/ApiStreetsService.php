@@ -110,6 +110,55 @@ class ApiStreetsService extends Object
 		return ['cities' => $data];
 	}
 
+	public function getCityParts($title = null)
+	{
+		$data = [];
+		$criteria = [];
+
+		if ($title) {
+			$criteria['title LIKE'] = '%'.$title.'%';
+		}
+
+		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+
+		$cityPartsIndexed = array();
+		foreach($cityParts as $cityPart) {
+			$cityPartsIndexed[$cityPart->city->id][] = $cityPart;
+		}
+
+		foreach ($cities as $city) {
+			if (is_numeric($city->title)) {
+				continue;
+			}
+
+			if(!empty($cityPartsIndexed[$city->id])) {
+				foreach($cityPartsIndexed[$city->id] as $partCity) {
+					$data[] = [
+						'cityId' => $city->id,
+						'partCityId' => $partCity->id,
+						'title' => Strings::capitalize($partCity->title),
+						'cityTitle' => Strings::capitalize($city->title),
+						'code' => $partCity->code,
+						'region' => Strings::capitalize($city->region->title),
+						'country' => Strings::capitalize($city->region->country),
+					];
+				}
+			}
+			else {
+				$data[] = [
+					'cityId' => $city->id,
+					'title' => Strings::capitalize($city->title),
+					'code' => $city->code,
+					'region' => Strings::capitalize($city->region->title),
+					'country' => Strings::capitalize($city->region->country),
+				];
+			}
+		}
+
+		return ['cityParts' => $data];
+	}
+
 	/**
 	 * @param int $cityId
 	 * @return array
