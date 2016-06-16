@@ -87,8 +87,8 @@ class ImportAddressService extends Object
 	protected function parseRegion($region, ProgressBar $progressBar)
 	{
 		$title = isset($region['nazev']) ? (string) $region['nazev'] : NULL;
-		$country = isset($region['kraj']) ? (string) $region['kraj'] : NULL;
-		$district = isset($region['okres']) ? (string) $region['okres'] : NULL;
+		$country = isset($region['kraj']) ? (string) $region['kraj'] : '';
+		$district = isset($region['okres']) ? (string) $region['okres'] : '';
 
 		$progressBar->setMessage('<info>processing ' . $title . '</info>');
 
