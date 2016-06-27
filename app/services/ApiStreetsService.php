@@ -55,14 +55,16 @@ class ApiStreetsService extends Object
 
 		$data = [];
 		foreach ($streets as $street) {
-			if (!array_search($street->title, $this->tempArray)) {
-				$this->tempArray[] = $street->title;
-				$data[] = [
-					'streetId' => $street->id,
-					'title' => Strings::capitalize($street->title),
-					'code' => $street->code,
-				];
+			if (is_numeric($street->title) || array_key_exists($street->title, $this->tempArray)) {
+				continue;
 			}
+
+			$this->tempArray[$street->title] = 1;
+			$data[] = [
+				'streetId' => $street->id,
+				'title' => Strings::capitalize($street->title),
+				'code' => $street->code,
+			];
 		}
 
 		return ['streets' => $data];
@@ -191,16 +193,16 @@ class ApiStreetsService extends Object
 		}
 		$streets = $this->streetRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		foreach ($streets as $street) {
-			if (!is_numeric($street->title)) {
-				if (!array_search($street->title, $this->tempArray)) {
-					$this->tempArray[] = $street->title;
-					$data[] = [
-						'streetId' => $street->id,
-						'title' => Strings::capitalize($street->title),
-						'code' => $street->code,
-					];
-				}
+			if (is_numeric($street->title) || array_key_exists($street->title, $this->tempArray)) {
+				continue;
 			}
+
+			$this->tempArray[$street->title] = 1;
+			$data[] = [
+				'streetId' => $street->id,
+				'title' => Strings::capitalize($street->title),
+				'code' => $street->code,
+			];
 		}
 		$city = $this->cityRepository->findOneBy(['code' => $cityId]);
 
