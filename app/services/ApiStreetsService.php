@@ -67,7 +67,21 @@ class ApiStreetsService extends Object
 			];
 		}
 
-		return ['streets' => $data];
+		$partCity = $this->partCityRepository->findOneBy(['id' => $partCityId]);
+
+		$partCityTitle = null;
+		if ($partCity && $partCity->city) {
+			$partCityTitle = $partCity->city->title;
+
+			if ($partCity->city->title !== $partCity->title) {
+				$partCityTitle .= ' - ' . $partCity->title;
+			}
+		}
+
+		return [
+			'city' => $partCityTitle,
+			'streets' => $data,
+		];
 	}
 
 
