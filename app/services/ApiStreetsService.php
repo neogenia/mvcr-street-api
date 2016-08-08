@@ -157,6 +157,7 @@ class ApiStreetsService extends Object
 						'cityTitle' => Strings::capitalize($city->title),
 						'code' => $partCity->code,
 						'region' => Strings::capitalize($city->region->title),
+						'district' => Strings::capitalize($city->region->district),
 						'country' => Strings::capitalize($city->region->country),
 					];
 				}
@@ -167,6 +168,7 @@ class ApiStreetsService extends Object
 					'title' => Strings::capitalize($city->title),
 					'code' => $city->code,
 					'region' => Strings::capitalize($city->region->title),
+					'district' => Strings::capitalize($city->region->district),
 					'country' => Strings::capitalize($city->region->country),
 				];
 			}
