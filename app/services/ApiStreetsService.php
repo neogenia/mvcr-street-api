@@ -98,14 +98,21 @@ class ApiStreetsService extends Object
 		}
 	}
 
-	public function getCities($title = null)
+	/**
+	 * 
+	 * @param array $filter
+	 * @return array
+	 */
+	public function getCities(array $filter = array())
 	{
 		$data = [];
 		$criteria = [];
 
-		if ($title) {
-			$criteria['title LIKE'] = '%'.$title.'%';
+		if ($filter['title']) {
+			$criteria['title LIKE'] = '%'.$filter['title'].'%';
 		}
+
+		$limit = $filter['limit'] ?: null;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 
@@ -121,19 +128,30 @@ class ApiStreetsService extends Object
 				'region' => Strings::capitalize($city->region->title),
 				'country' => Strings::capitalize($city->region->country),
 			];
+
+			if(count($data) == $limit) {
+				break;
+			}
 		}
 
 		return ['cities' => $data];
 	}
 
-	public function getCityParts($title = null)
+	/**
+	 * 
+	 * @param array $filter
+	 * @return array
+	 */
+	public function getCityParts(array $filter = array())
 	{
 		$data = [];
 		$criteria = [];
 
-		if ($title) {
-			$criteria['title LIKE'] = '%'.$title.'%';
+		if ($filter['title']) {
+			$criteria['title LIKE'] = '%'.$filter['title'].'%';
 		}
+
+		$limit = $filter['limit'] ?: null;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
@@ -147,7 +165,6 @@ class ApiStreetsService extends Object
 			if (is_numeric($city->title)) {
 				continue;
 			}
-
 			if(!empty($cityPartsIndexed[$city->id])) {
 				foreach($cityPartsIndexed[$city->id] as $partCity) {
 					$data[] = [
@@ -160,6 +177,10 @@ class ApiStreetsService extends Object
 						'district' => Strings::capitalize($city->region->district),
 						'country' => Strings::capitalize($city->region->country),
 					];
+
+					if(count($data) == $limit) {
+						break 2;
+					}
 				}
 			}
 			else {
@@ -171,6 +192,10 @@ class ApiStreetsService extends Object
 					'district' => Strings::capitalize($city->region->district),
 					'country' => Strings::capitalize($city->region->country),
 				];
+			}
+
+			if(count($data) == $limit) {
+				break;
 			}
 		}
 
