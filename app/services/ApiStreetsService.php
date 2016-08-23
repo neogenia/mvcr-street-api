@@ -112,7 +112,7 @@ class ApiStreetsService extends Object
 			$criteria['title LIKE'] = '%'.$filter['title'].'%';
 		}
 
-		$limit = $filter['limit'] ?: null;
+		$limit = is_numeric($filter['limit']) ? $filter['limit'] : 0;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 
@@ -151,7 +151,7 @@ class ApiStreetsService extends Object
 			$criteria['title LIKE'] = '%'.$filter['title'].'%';
 		}
 
-		$limit = $filter['limit'] ?: null;
+		$limit = is_numeric($filter['limit']) ? $filter['limit'] : 0;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
