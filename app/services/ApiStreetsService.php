@@ -202,6 +202,27 @@ class ApiStreetsService extends Object
 		return ['cityParts' => $data];
 	}
 
+	public function getCityOrPartCityNameByCode($code)
+	{
+		$partCity = $this->partCityRepository->findOneBy(['code' => $code]);
+		if ($partCity) {
+			return [
+				'name' => $partCity->title
+			];
+		}
+
+		$city = $this->cityRepository->findOneBy(['code' => $code]);
+		if ($city) {
+			return [
+				'name' => $city->title
+			];
+		}
+
+		return [
+			'name' => []
+		];
+	}
+
 	public function getStreetsFromCityOrPartCityByCode($code, $title)
 	{
 		$partCity = $this->partCityRepository->findOneBy(['code' => $code]);
