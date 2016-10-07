@@ -147,11 +147,15 @@ class ApiStreetsService extends Object
 		$data = [];
 		$criteria = [];
 
-		if ($filter['title']) {
+		if (!empty($filter['title'])) {
 			$criteria['title LIKE'] = '%'.$filter['title'].'%';
 		}
 
-		$limit = is_numeric($filter['limit']) ? $filter['limit'] : 0;
+		if (!empty($filter['code'])) {
+			$criteria['code'] = $filter['code'];
+		}
+
+		$limit = !empty($filter['limit']) ? $filter['limit'] : 0;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
