@@ -99,7 +99,7 @@ class ApiStreetsService extends Object
 	}
 
 	/**
-	 * 
+	 *
 	 * @param array $filter
 	 * @return array
 	 */
@@ -138,7 +138,7 @@ class ApiStreetsService extends Object
 	}
 
 	/**
-	 * 
+	 *
 	 * @param array $filter
 	 * @return array
 	 */
@@ -170,17 +170,18 @@ class ApiStreetsService extends Object
 				continue;
 			}
 			if(!empty($cityPartsIndexed[$city->id])) {
-				foreach($cityPartsIndexed[$city->id] as $partCity) {
+				foreach($cityPartsIndexed[$city->id] as $cityPart) {
 					$data[] = [
 						'cityId' => $city->id,
-						'partCityId' => $partCity->id,
-						'title' => Strings::capitalize($partCity->title),
+						'partCityId' => $cityPart->id,
+						'title' => Strings::capitalize($cityPart->title),
 						'cityTitle' => Strings::capitalize($city->title),
-						'code' => $partCity->code,
+						'code' => $cityPart->code,
 						'region' => Strings::capitalize($city->region->title),
 						'district' => Strings::capitalize($city->region->district),
 						'country' => Strings::capitalize($city->region->country),
 					];
+					unset($cityPartsIndexed[$city->id]);
 
 					if(count($data) == $limit) {
 						break 2;
@@ -200,6 +201,23 @@ class ApiStreetsService extends Object
 
 			if(count($data) == $limit) {
 				break;
+			}
+		}
+
+		// city parts without found city
+		foreach ($cityPartsIndexed as $cityId => $cityParts) {
+			foreach ($cityParts as $cityPart) {
+				$city = $cityPart->city;
+				$data[] = [
+					'cityId' => $city->id,
+					'partCityId' => $cityPart->id,
+					'title' => Strings::capitalize($cityPart->title),
+					'cityTitle' => Strings::capitalize($city->title),
+					'code' => $cityPart->code,
+					'region' => Strings::capitalize($city->region->title),
+					'district' => Strings::capitalize($city->region->district),
+					'country' => Strings::capitalize($city->region->country),
+				];
 			}
 		}
 
