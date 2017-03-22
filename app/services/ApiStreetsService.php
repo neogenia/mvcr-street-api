@@ -165,12 +165,24 @@ class ApiStreetsService extends Object
 			$cityPartsIndexed[$cityPart->city->id][] = $cityPart;
 		}
 
+		// return all city parts for selected cities
+		$usedCityParts = [];
 		foreach ($cities as $city) {
 			if (is_numeric($city->title)) {
 				continue;
 			}
-			if(!empty($cityPartsIndexed[$city->id])) {
-				foreach($cityPartsIndexed[$city->id] as $cityPart) {
+			if (!isset($cityPartsIndexed[$city->id])) {
+				$data[] = [
+					'cityId' => $city->id,
+					'title' => Strings::capitalize($cityPart->title),
+					'code' => $city->code,
+					'region' => Strings::capitalize($city->region->title),
+					'district' => Strings::capitalize($city->region->district),
+					'country' => Strings::capitalize($city->region->country),
+				];
+			}
+			else {
+				foreach ($cityPartsIndexed[$city->id] as $cityPart) {
 					$data[] = [
 						'cityId' => $city->id,
 						'partCityId' => $cityPart->id,
@@ -181,43 +193,33 @@ class ApiStreetsService extends Object
 						'district' => Strings::capitalize($city->region->district),
 						'country' => Strings::capitalize($city->region->country),
 					];
-					unset($cityPartsIndexed[$city->id]);
-
-					if(count($data) == $limit) {
+					$usedCityParts[] = $cityPart->id;
+					if (count($data) == $limit) {
 						break 2;
 					}
 				}
 			}
-			else {
-				$data[] = [
-					'cityId' => $city->id,
-					'title' => Strings::capitalize($city->title),
-					'code' => $city->code,
-					'region' => Strings::capitalize($city->region->title),
-					'district' => Strings::capitalize($city->region->district),
-					'country' => Strings::capitalize($city->region->country),
-				];
-			}
-
-			if(count($data) == $limit) {
-				break;
-			}
 		}
 
-		// city parts without found city
-		foreach ($cityPartsIndexed as $cityId => $cityParts) {
-			foreach ($cityParts as $cityPart) {
-				$city = $cityPart->city;
-				$data[] = [
-					'cityId' => $city->id,
-					'partCityId' => $cityPart->id,
-					'title' => Strings::capitalize($cityPart->title),
-					'cityTitle' => Strings::capitalize($city->title),
-					'code' => $cityPart->code,
-					'region' => Strings::capitalize($city->region->title),
-					'district' => Strings::capitalize($city->region->district),
-					'country' => Strings::capitalize($city->region->country),
-				];
+		// return selected cityparts not used in first foreach
+		foreach ($cityParts as $cityPart) {
+			if (in_array($cityPart->id, $usedCityParts)) {
+				continue;
+			}
+			$city = $cityPart->city;
+			$data[] = [
+				'cityId' => $city->id,
+				'partCityId' => $cityPart->id,
+				'title' => Strings::capitalize($cityPart->title),
+				'cityTitle' => Strings::capitalize($city->title),
+				'code' => $cityPart->code,
+				'region' => Strings::capitalize($city->region->title),
+				'district' => Strings::capitalize($city->region->district),
+				'country' => Strings::capitalize($city->region->country),
+			];
+			$usedCityParts[] = $cityPart->id;
+			if(count($data) == $limit) {
+				break;
 			}
 		}
 
