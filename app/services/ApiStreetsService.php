@@ -158,10 +158,15 @@ class ApiStreetsService extends Object
 		$limit = !empty($filter['limit']) ? $filter['limit'] : 0;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
-		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+		$cityIds = [];
+		foreach ($cities as $city) {
+			$cityIds[] = $city->id;
+		}
+
+		$cityPartsAll = $this->partCityRepository->findBy(['city' => $cityIds], ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 
 		$cityPartsIndexed = array();
-		foreach($cityParts as $cityPart) {
+		foreach($cityPartsAll as $cityPart) {
 			$cityPartsIndexed[$cityPart->city->id][] = $cityPart;
 		}
 
@@ -180,6 +185,9 @@ class ApiStreetsService extends Object
 					'district' => Strings::capitalize($city->region->district),
 					'country' => Strings::capitalize($city->region->country),
 				];
+				if (count($data) == $limit) {
+					break;
+				}
 			}
 			else {
 				foreach ($cityPartsIndexed[$city->id] as $cityPart) {
@@ -201,6 +209,8 @@ class ApiStreetsService extends Object
 			}
 		}
 
+
+		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		// return selected cityparts not used in first foreach
 		foreach ($cityParts as $cityPart) {
 			if (in_array($cityPart->id, $usedCityParts)) {
