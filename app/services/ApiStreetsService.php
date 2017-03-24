@@ -179,7 +179,7 @@ class ApiStreetsService extends Object
 			if (!isset($cityPartsIndexed[$city->id])) {
 				$data[] = [
 					'cityId' => $city->id,
-					'title' => Strings::capitalize($cityPart->title),
+					'title' => Strings::capitalize($city->title),
 					'code' => $city->code,
 					'region' => Strings::capitalize($city->region->title),
 					'district' => Strings::capitalize($city->region->district),
