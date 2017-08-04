@@ -155,6 +155,11 @@ class ApiStreetsService extends Object
 			$criteria['code'] = $filter['code'];
 		}
 
+		if (!empty($filter['zip'])) {
+			$criteria['minZip <='] = $filter['zip'];
+			$criteria['maxZip >='] = $filter['zip'];
+		}
+
 		$limit = !empty($filter['limit']) ? $filter['limit'] : 0;
 
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);

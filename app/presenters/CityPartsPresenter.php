@@ -19,8 +19,9 @@ class CityPartsPresenter extends ApiPresenter
             $this->sendJson($this->apiStreetsService->getCityParts(['code' => $code]));
         } else {
             $title = trim($this->getApiParameter('title', FALSE));
-            $limit = $this->getApiParameter('limit', FALSE);
-            $this->sendJson($this->apiStreetsService->getCityParts(['title' => $title, 'limit' => $limit]));
+            $zip = $this->getApiParameter('zip', FALSE);
+			$limit = $this->getApiParameter('limit', FALSE);
+            $this->sendJson($this->apiStreetsService->getCityParts(['title' => $title, 'zip' => $zip, 'limit' => $limit]));
         }
     }
 }
