@@ -46,7 +46,7 @@ class PartCity
 	protected $streets;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="City", inversedBy="partCities")
+	 * @ORM\ManyToOne(targetEntity="City", inversedBy="partCities", fetch="EAGER")
 	 */
 	protected $city;
 
