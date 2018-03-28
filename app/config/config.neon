@@ -16,9 +16,10 @@ console:
 		- Console\ImportAddressCommand
 
 redis:
+	database: 2
 	journal: on
 	storage: on
-	session: on
+	session: {database: 1, native: off}
 
 application:
 	mapping:
