@@ -168,7 +168,7 @@ class ApiStreetsService extends Object
 		$limit = !empty($filter['limit']) ? $filter['limit'] : 50; // default limit
 
 		$key = serialize($criteria) . $limit;
-		$data = $this->cache->load($key, []);
+		$data = $this->cache->load($key, function(){return [];});
 
 		if (empty($data)) {
 
