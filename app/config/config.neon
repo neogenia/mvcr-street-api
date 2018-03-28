@@ -34,3 +34,4 @@ services:
 	router: StreetApi\RouterFactory::createRouter
 	- {class: StreetApi\Services\ImportAddressService(..., %appDir%), inject: on}
 	- {class: StreetApi\Services\ApiStreetsService, inject: on}
+	cache: Nette\Caching\Cache

@@ -5,6 +5,7 @@ namespace StreetApi\Services;
 use Doctrine\Common\Collections\Criteria;
 use Kdyby\Doctrine\EntityManager;
 use Kdyby\Doctrine\EntityRepository;
+use Nette\Caching\Cache;
 use Nette\Object;
 use Nette\Utils\Strings;
 use StreetApi\Model\City;
@@ -27,16 +28,20 @@ class ApiStreetsService extends Object
 	/** @var EntityRepository */
 	private $cityRepository;
 
+	/** @var Cache */
+	private $cache;
+
 	/** @var array */
 	private $tempArray = [];
 
 
-	public function __construct(EntityManager $em)
+	public function __construct(EntityManager $em, Cache $cache)
 	{
 		$this->em = $em;
 		$this->streetRepository = $em->getRepository(Street::class);
 		$this->partCityRepository = $em->getRepository(PartCity::class);
 		$this->cityRepository = $em->getRepository(City::class);
+		$this->cache = $cache;
 	}
 
 
@@ -162,80 +167,89 @@ class ApiStreetsService extends Object
 
 		$limit = !empty($filter['limit']) ? $filter['limit'] : 0;
 
-		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
-		$cityIds = [];
-		foreach ($cities as $city) {
-			$cityIds[] = $city->id;
-		}
+		$key = serialize($criteria) . $limit;
+		$data = $this->cache->load($key);
 
-		$cityPartsAll = $this->partCityRepository->findBy(['city' => $cityIds], ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+		if (empty($data)) {
 
-		$cityPartsIndexed = array();
-		foreach($cityPartsAll as $cityPart) {
-			$cityPartsIndexed[$cityPart->city->id][] = $cityPart;
-		}
-
-		// return all city parts for selected cities
-		$usedCityParts = [];
-		foreach ($cities as $city) {
-			if (is_numeric($city->title)) {
-				continue;
+			$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+			$cityIds = [];
+			foreach ($cities as $city) {
+				$cityIds[] = $city->id;
 			}
-			if (!isset($cityPartsIndexed[$city->id])) {
-				$data[] = [
-					'cityId' => $city->id,
-					'title' => Strings::capitalize($city->title),
-					'code' => $city->code,
-					'region' => Strings::capitalize($city->region->title),
-					'district' => Strings::capitalize($city->region->district),
-					'country' => Strings::capitalize($city->region->country),
-				];
-				if (count($data) == $limit) {
-					break;
+
+			$cityPartsAll = $this->partCityRepository->findBy(['city' => $cityIds],
+				['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+
+			$cityPartsIndexed = array();
+			foreach ($cityPartsAll as $cityPart) {
+				$cityPartsIndexed[$cityPart->city->id][] = $cityPart;
+			}
+
+			// return all city parts for selected cities
+			$usedCityParts = [];
+			foreach ($cities as $city) {
+				if (is_numeric($city->title)) {
+					continue;
 				}
-			}
-			else {
-				foreach ($cityPartsIndexed[$city->id] as $cityPart) {
+				if (!isset($cityPartsIndexed[$city->id])) {
 					$data[] = [
 						'cityId' => $city->id,
-						'partCityId' => $cityPart->id,
-						'title' => Strings::capitalize($cityPart->title),
-						'cityTitle' => Strings::capitalize($city->title),
-						'code' => $cityPart->code,
+						'title' => Strings::capitalize($city->title),
+						'code' => $city->code,
 						'region' => Strings::capitalize($city->region->title),
 						'district' => Strings::capitalize($city->region->district),
 						'country' => Strings::capitalize($city->region->country),
 					];
-					$usedCityParts[] = $cityPart->id;
 					if (count($data) == $limit) {
-						break 2;
+						break;
+					}
+				} else {
+					foreach ($cityPartsIndexed[$city->id] as $cityPart) {
+						$data[] = [
+							'cityId' => $city->id,
+							'partCityId' => $cityPart->id,
+							'title' => Strings::capitalize($cityPart->title),
+							'cityTitle' => Strings::capitalize($city->title),
+							'code' => $cityPart->code,
+							'region' => Strings::capitalize($city->region->title),
+							'district' => Strings::capitalize($city->region->district),
+							'country' => Strings::capitalize($city->region->country),
+						];
+						$usedCityParts[] = $cityPart->id;
+						if (count($data) == $limit) {
+							break 2;
+						}
 					}
 				}
 			}
-		}
 
 
-		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
-		// return selected cityparts not used in first foreach
-		foreach ($cityParts as $cityPart) {
-			if (in_array($cityPart->id, $usedCityParts)) {
-				continue;
+			$cityParts = $this->partCityRepository->findBy($criteria,
+				['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+			// return selected cityparts not used in first foreach
+			foreach ($cityParts as $cityPart) {
+				if (in_array($cityPart->id, $usedCityParts)) {
+					continue;
+				}
+				$city = $cityPart->city;
+				$data[] = [
+					'cityId' => $city->id,
+					'partCityId' => $cityPart->id,
+					'title' => Strings::capitalize($cityPart->title),
+					'cityTitle' => Strings::capitalize($city->title),
+					'code' => $cityPart->code,
+					'region' => Strings::capitalize($city->region->title),
+					'district' => Strings::capitalize($city->region->district),
+					'country' => Strings::capitalize($city->region->country),
+				];
+				$usedCityParts[] = $cityPart->id;
+				if (count($data) == $limit) {
+					break;
+				}
 			}
-			$city = $cityPart->city;
-			$data[] = [
-				'cityId' => $city->id,
-				'partCityId' => $cityPart->id,
-				'title' => Strings::capitalize($cityPart->title),
-				'cityTitle' => Strings::capitalize($city->title),
-				'code' => $cityPart->code,
-				'region' => Strings::capitalize($city->region->title),
-				'district' => Strings::capitalize($city->region->district),
-				'country' => Strings::capitalize($city->region->country),
-			];
-			$usedCityParts[] = $cityPart->id;
-			if(count($data) == $limit) {
-				break;
-			}
+
+			$this->cache->save($key, $data);
 		}
 
 		return ['cityParts' => $data];
