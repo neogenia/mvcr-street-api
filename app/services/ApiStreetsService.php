@@ -165,7 +165,7 @@ class ApiStreetsService extends Object
 			$criteria['maxZip >='] = $filter['zip'];
 		}
 
-		$limit = !empty($filter['limit']) ? $filter['limit'] : 0;
+		$limit = !empty($filter['limit']) ? $filter['limit'] : 50; // default limit
 
 		$key = serialize($criteria) . $limit;
 		$data = $this->cache->load($key);
@@ -201,7 +201,7 @@ class ApiStreetsService extends Object
 						'district' => Strings::capitalize($city->region->district),
 						'country' => Strings::capitalize($city->region->country),
 					];
-					if (count($data) == $limit) {
+					if (count($data) >= $limit) {
 						break;
 					}
 				} else {
@@ -217,7 +217,7 @@ class ApiStreetsService extends Object
 							'country' => Strings::capitalize($city->region->country),
 						];
 						$usedCityParts[] = $cityPart->id;
-						if (count($data) == $limit) {
+						if (count($data) >= $limit) {
 							break 2;
 						}
 					}
@@ -244,7 +244,7 @@ class ApiStreetsService extends Object
 					'country' => Strings::capitalize($city->region->country),
 				];
 				$usedCityParts[] = $cityPart->id;
-				if (count($data) == $limit) {
+				if (count($data) >= $limit) {
 					break;
 				}
 			}
