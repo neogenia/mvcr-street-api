@@ -9,13 +9,16 @@ extensions:
 	events: Kdyby\Events\DI\EventsExtension
 	annotations: Kdyby\Annotations\DI\AnnotationsExtension
 	doctrine: Kdyby\Doctrine\DI\OrmExtension
-
+	redis: Kdyby\Redis\DI\RedisExtension
 
 console:
 	commands:
 		- Console\ImportAddressCommand
 
-
+redis:
+	journal: on
+	storage: on
+	session: on
 
 application:
 	mapping:

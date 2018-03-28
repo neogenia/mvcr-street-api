@@ -33,7 +33,8 @@
 		"tracy/tracy": "~2.3.0",
 		"dg/adminer-custom": "~1.6",
 		"kdyby/doctrine": "~3.0",
-		"kdyby/console": "~2.5"
+		"kdyby/console": "~2.5",
+		"kdyby/redis": "^3.3"
 	},
 	"require-dev": {
 		"nette/tester": "~1.3"
