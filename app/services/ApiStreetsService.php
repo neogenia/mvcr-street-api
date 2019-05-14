@@ -14,7 +14,7 @@ use StreetApi\Model\Street;
 
 class ApiStreetsService extends Object
 {
-	const CITY_PARTS_INCLUDED = [
+	const CITY_PARTS_WHITELIST = [
 		6257, // Praha
 		347, // Brno
 		3520, // Ostrava
@@ -157,7 +157,7 @@ class ApiStreetsService extends Object
 	{
 		$data = [];
 		$criteria = [];
-		$excludeCityParts = isset($filter['exclude']) ? $filter['exclude'] : false;
+		$excludeCityParts = isset($filter['whitelistedCityParts']) ? $filter['whitelistedCityParts'] : false;
 
 		if (!empty($filter['title'])) {
 			$criteria['title LIKE'] = '%'.$filter['title'].'%';
@@ -177,7 +177,7 @@ class ApiStreetsService extends Object
 		$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		$cityIds = [];
 		foreach ($cities as $city) {
-			if (!$excludeCityParts || in_array($city->id, self::CITY_PARTS_INCLUDED)) {
+			if (!$excludeCityParts || in_array($city->id, self::CITY_PARTS_WHITELIST)) {
 				$cityIds[] = $city->id;
 			}
 		}
@@ -229,7 +229,7 @@ class ApiStreetsService extends Object
 		}
 
 		if ($excludeCityParts) {
-			$criteria['city'] = self::CITY_PARTS_INCLUDED;
+			$criteria['city'] = self::CITY_PARTS_WHITELIST;
 		}
 		$cityParts = $this->partCityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 		// return selected cityparts not used in first foreach
