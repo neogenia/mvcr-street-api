@@ -15,6 +15,17 @@ use StreetApi\Model\Street;
 
 class ApiStreetsService extends Object
 {
+	const CITY_PARTS_INCLUDED = [
+		6257, // Praha
+		347, // Brno
+		3520, // Ostrava
+		3492, // Opava
+		2533, // Liberec
+		3758, // Plzeň
+		1336, // Hradec Králové
+		3615, // Pardubice
+		5559, // Ústí n. L.
+	];
 
 	/** @var EntityManager */
 	private $em;
@@ -149,8 +160,8 @@ class ApiStreetsService extends Object
 	 */
 	public function getCityParts(array $filter = array())
 	{
-		$data = [];
 		$criteria = [];
+		$excludeCityParts = isset($filter['exclude']) ? $filter['exclude'] : false;
 
 		if (!empty($filter['title'])) {
 			$criteria['title LIKE'] = '%'.$filter['title'].'%';
@@ -175,7 +186,9 @@ class ApiStreetsService extends Object
 			$cities = $this->cityRepository->findBy($criteria, ['title' => Criteria::ASC, 'id' => Criteria::ASC]);
 			$cityIds = [];
 			foreach ($cities as $city) {
-				$cityIds[] = $city->id;
+				if (!$excludeCityParts || in_array($city->id, self::CITY_PARTS_INCLUDED)) {
+					$cityIds[] = $city->id;
+				}
 			}
 
 			$cityPartsAll = $this->partCityRepository->findBy(['city' => $cityIds],
@@ -224,9 +237,13 @@ class ApiStreetsService extends Object
 				}
 			}
 
-
-			$cityParts = $this->partCityRepository->findBy($criteria,
-				['title' => Criteria::ASC, 'id' => Criteria::ASC]);
+			if ($excludeCityParts) {
+				$criteria['city'] = self::CITY_PARTS_INCLUDED;
+			}
+			$cityParts = $this->partCityRepository->findBy(
+				$criteria,
+				['title' => Criteria::ASC, 'id' => Criteria::ASC]
+			);
 			// return selected cityparts not used in first foreach
 			foreach ($cityParts as $cityPart) {
 				if (in_array($cityPart->id, $usedCityParts)) {
