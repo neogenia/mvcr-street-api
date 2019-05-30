@@ -16,7 +16,11 @@ class CityPartsPresenter extends ApiPresenter
             $this->sendJson($this->apiStreetsService->getCityOrPartCityNameByCode($code));
         }
 		elseif ($code = $this->getApiParameter('code', FALSE)) {
-            $this->sendJson($this->apiStreetsService->getCityParts(['code' => $code]));
+			$whitelistedCityParts = $this->getApiParameter('whitelistedCityParts', false);
+            $this->sendJson($this->apiStreetsService->getCityParts([
+            	'code' => $code,
+	            'whitelistedCityParts' => $whitelistedCityParts,
+            ]));
         } else {
             $title = trim($this->getApiParameter('title', FALSE));
             $zip = $this->getApiParameter('zip', FALSE);
@@ -26,7 +30,7 @@ class CityPartsPresenter extends ApiPresenter
 		        'title' => $title,
 		        'zip' => $zip,
 		        'limit' => $limit,
-		        'whitelistedCityParts' => $whitelistedCityParts
+		        'whitelistedCityParts' => $whitelistedCityParts,
 	        ]));
         }
     }
